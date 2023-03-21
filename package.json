@@ -1,0 +1,36 @@
+{
+  "name": "opengraphfileupload",
+  "version": "1.0.0",
+  "description": "A file upload service that generates Open Graph Protocol metadata",
+  "main": "index.js",
+  "scripts": {
+    "start": ". ./export_env_vars.sh && node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EmnichtdaYT/opengraphfileupload.git"
+  },
+  "keywords": [
+    "node.js",
+    "js",
+    "javascript",
+    "express",
+    "file",
+    "upload",
+    "open",
+    "graph",
+    "opengraph"
+  ],
+  "author": "EmnichtdaYT",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EmnichtdaYT/opengraphfileupload/issues"
+  },
+  "homepage": "https://github.com/EmnichtdaYT/opengraphfileupload#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^5.1.6"
+  }
+}

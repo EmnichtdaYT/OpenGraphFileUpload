@@ -1,0 +1,4 @@
+/.env
+/.prettierrc
+/credentials.db
+/node_modules
