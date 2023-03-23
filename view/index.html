@@ -65,7 +65,7 @@
                   <input type="password" class="form-control" id="in_password" name="password" />
                 </div>
                 <div class="form-check">
-                  <input type="checkbox" class="form-check-input" id="check_keepLoggedin">
+                  <input type="checkbox" class="form-check-input" id="check_keepLoggedin" />
                   <label class="form-check-label" for="check_keepLoggedin">Keep me logged in</label>
                 </div>
                 <button id="btn_submit" type="submit" class="btn btn-success btn-block">Login</button>
@@ -93,28 +93,41 @@
           }
 
           if (loginRequest.status === 200) {
-            const response = JSON.parse(loginRequest.responseText);
-            if(keepLoggedin){
-              setCookie("token", response.token, response.expiresIn || 1);
-            }else{
-              setCookie("token", response.token);
+            let response;
+            try {
+              response = JSON.parse(loginRequest.responseText);
+            } catch (e) {
+              console.log(e);
+              $("#login-msg").html("An error occured. Please try again!");
+              $("#btn_submit").html("Login");
+              $("#btn_submit").attr("disabled", false);
+              return;
             }
-            window.location.href = "/dashboard"
+            if (keepLoggedin) {
+              setCookie("token", response.token, response.expiresIn || 1);
+              setCookie("user", user, response.expiresIn || 1);
+            } else {
+              setCookie("token", response.token);
+              setCookie("user", user);
+            }
+            window.location.href = "/dashboard";
           } else {
-            if(loginRequest.status === 401){
+            if (loginRequest.status === 401) {
               $("#login-msg").html("Incorrect username or password!");
-            }else if(loginRequest.status == 429){
-              $("#login-msg").html("Too many login attempts, please try again later.");              
-            }else{
+            } else if (loginRequest.status == 429) {
+              $("#login-msg").html("Too many login attempts, please try again later.");
+            } else {
               $("#login-msg").html("An error occurred. Please try again!");
             }
             $("#btn_submit").html("Login");
+            $("#btn_submit").attr("disabled", false);
             console.log(loginRequest.responseText);
           }
         };
 
         $("#login-msg").html("");
         $("#btn_submit").html("<img width='20' height='20' src='/images/loading.gif' alt='Loading'></img>");
+        $("#btn_submit").attr("disabled", true);
         loginRequest.open("POST", "/login", true);
         loginRequest.setRequestHeader("Content-type", "application/json");
         loginRequest.send(JSON.stringify({ username: user, password: pass, extendedExpire: keepLoggedin }));
