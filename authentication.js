@@ -9,8 +9,10 @@ function login(username, password, extendedExpire) {
       .then((isValid) => {
         if (isValid) {
           if (extendedExpire) {
+            createToken(username, 30)
             resolve([200, { token: "Kiaraaaaaa", expiresIn: 30 }]);
           } else {
+            createToken(username, 1)
             resolve([200, { token: "Kiaraaaaaa", expiresIn: 1 }]);
           }
         } else {
@@ -73,6 +75,10 @@ function generateSalt(length) {
       counter += 1;
     }
     return result;
+}
+
+function createToken(username, expiresIn){
+  
 }
 
 function register(username, password) {
