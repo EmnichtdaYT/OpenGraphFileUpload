@@ -59,8 +59,6 @@ app.post("/upload", upload.single("file"), (req, res) => {
   const token = req.body.token;
   const file = req.file;
 
-  console.log(token, file);
-
   res.status(501)
 });
 
