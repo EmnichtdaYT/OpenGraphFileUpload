@@ -36,7 +36,7 @@ function checkCredentials(username, password) {
 
       if (row) {
         const salt = row.salt;
-        const hashedPassword = hash(password + salt);
+        const hashedPassword = hash(password, salt);
 
         // check if the hashed password matches the one in the database
         db.get(
@@ -65,16 +65,21 @@ function checkCredentials(username, password) {
   });
 }
 
+function isTokenValidForUser(username, token){
+  //TODO implement
+  const tokenInfo = getTokenInfo(token)
+  return tokenInfo[0] && tokenInfo[1] === username;
+}
+
+function getTokenInfo(token){
+  //TODO implement
+  return [true, "zoe", "hier kommt dann eine datetime hin."];
+}
+
 function generateSalt(length) {
-    let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      counter += 1;
-    }
-    return result;
+  let buffer = new Uint8Array(length)
+  crypto.getRandomValues(buffer)
+  return buffer
 }
 
 function createToken(username, expiresIn){
@@ -86,7 +91,7 @@ function register(username, password) {
 
   const salt = generateSalt(5)
 
-  stmt.run(username, hash(password + salt), salt, function (err) {
+  stmt.run(username, hash(password, salt), salt, function (err) {
     if (err) {
       console.log("Error registering user:", err.message);
       return;
@@ -95,8 +100,8 @@ function register(username, password) {
   });
 }
 
-function hash(input) {
-  return crypto.createHash("sha256").update(input).digest("hex");
+function hash(input, salt) {
+  return crypto.createHash("sha256").update(input).update(crypto.createHash("sha256").update(salt).digest()).digest("hex");
 }
 
-module.exports = { login };
+module.exports = { login, isTokenValidForUser };

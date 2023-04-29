@@ -26,9 +26,9 @@ const loginLimiter = rateLimit({
 });
 
 
-app.use(generalLimiter);
-app.use("/login", loginLimiter);
-
+app.use(generalLimiter)
+app.use("/login", loginLimiter)
+app.use("/token", loginLimiter)
 
 
 app.get("/", function (req, res) {
@@ -54,6 +54,18 @@ app.post("/login", (req, res) => {
     res.status(500).send(message)
   })
 });
+
+app.post("/token", (req, res) => {
+  const { username, token } = req.body;
+
+  res.set('Content-Type', 'application/json');
+
+  if(auth.isTokenValidForUser(username, token)){
+    res.status(200).send({ message: "valid" })
+  }else{
+    res.status(401).send({ message: "invalid" })
+  }
+})
 
 app.post("/upload", upload.single("file"), (req, res) => {
   const token = req.body.token;
