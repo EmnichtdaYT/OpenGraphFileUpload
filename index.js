@@ -45,10 +45,11 @@ app.get('/login', (req, res) => {
 
 app.post("/login", (req, res) => {
   const { username, password, extendedExpire } = req.body;
+  const useragent = req.get("User-agent");
 
   res.set('Content-Type', 'application/json');
   
-  auth.login(username, password, extendedExpire).then((response) => {
+  auth.login(username, password, extendedExpire, useragent).then((response) => {
     res.status(response[0]).send(response[1])
   }).catch((message) => {
     res.status(500).send(message)

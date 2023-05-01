@@ -3,16 +3,16 @@ const crypto = require("crypto");
 
 const db = new sqlite3.Database("credentials.db");
 
-function login(username, password, extendedExpire) {
+function login(username, password, extendedExpire, useragent) {
   return new Promise((resolve, reject) => {
     checkCredentials(username, password)
       .then((isValid) => {
         if (isValid) {
           if (extendedExpire) {
-            createToken(username, 30)
+            createToken(username, 30, useragent)
             resolve([200, { token: "Kiaraaaaaa", expiresIn: 30 }]);
           } else {
-            createToken(username, 1)
+            createToken(username, 1, useragent)
             resolve([200, { token: "Kiaraaaaaa", expiresIn: 1 }]);
           }
         } else {
@@ -65,25 +65,33 @@ function checkCredentials(username, password) {
   });
 }
 
-function isTokenValidForUser(username, token){
+function isTokenValidForUser(username, token, useragent){
   //TODO implement
   const tokenInfo = getTokenInfo(token)
+  if(useragent !== tokenInfo[3]){
+    invalidateToken(token)
+    return false
+  }
   return tokenInfo[0] && tokenInfo[1] === username;
 }
 
 function getTokenInfo(token){
   //TODO implement
-  return [true, "zoe", "hier kommt dann eine datetime hin."];
+  return [true, "zoe", "hier kommt dann eine datetime hin.", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0"];
+}
+
+function createToken(username, expiresIn, useragent){
+  //TODO implement
+}
+
+function invalidateToken(token){
+  //TODO implement
 }
 
 function generateSalt(length) {
   let buffer = new Uint8Array(length)
   crypto.getRandomValues(buffer)
   return buffer
-}
-
-function createToken(username, expiresIn){
-  
 }
 
 function register(username, password) {
