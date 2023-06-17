@@ -4,6 +4,7 @@ const multer = require("multer");
 const bodyParser = require("body-parser");
 const rateLimit = require("express-rate-limit");
 const auth = require("./authentication.js");
+const expressuseragent = require('express-useragent');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -12,6 +13,8 @@ const upload = multer();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use(expressuseragent.express())
 
 const generalLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
@@ -45,7 +48,7 @@ app.get('/login', (req, res) => {
 
 app.post("/login", (req, res) => {
   const { username, password, extendedExpire } = req.body;
-  const useragent = req.get("User-agent");
+  const useragent = req.useragent;
 
   res.set('Content-Type', 'application/json');
   
@@ -58,10 +61,11 @@ app.post("/login", (req, res) => {
 
 app.post("/token", (req, res) => {
   const { username, token } = req.body;
+  const useragent = req.useragent;
 
   res.set('Content-Type', 'application/json');
 
-  if(auth.isTokenValidForUser(username, token)){
+  if(auth.isTokenValidForUser(username, token, useragent)){
     res.status(200).send({ message: "valid" })
   }else{
     res.status(401).send({ message: "invalid" })
