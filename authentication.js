@@ -66,6 +66,7 @@ function checkCredentials(username, password) {
 
 function isTokenValidForUser(username, token, useragent) {
   //TODO implement
+  console.log(useragent)
   const tokenInfo = getTokenInfo(token);
   if (useragent.browser !== tokenInfo[3].browser || useragent.os !== tokenInfo[3].os || useragent.platform !== tokenInfo[3].platform) {
     invalidateToken(token);
