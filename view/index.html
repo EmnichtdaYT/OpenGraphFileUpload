@@ -104,7 +104,7 @@
           }
 
           if (tokenCheck.status === 200) {
-            window.location.href = "/dashboard";
+            window.location.href = "/files";
             return;
           } else if (tokenCheck.status === 401) {
             setCookie("user", "", 0);
@@ -153,7 +153,7 @@
               setCookie("token", response.token);
               setCookie("user", user);
             }
-            window.location.href = "/dashboard";
+            window.location.href = "/files";
           } else {
             if (loginRequest.status === 401) {
               $("#login-msg").html("Incorrect username or password!");

@@ -31,12 +31,13 @@ const loginLimiter = rateLimit({
 app.use(generalLimiter);
 app.use("/login", loginLimiter);
 app.use("/token", loginLimiter);
+app.use("/logout", loginLimiter);
 
 app.get("/", function (req, res) {
   res.sendFile(path.join(__dirname, "./view/index.html"));
 });
 
-app.get("/dashboard", function (req, res) {
+app.get("/files", function (req, res) {
   res.sendFile(path.join(__dirname, "./view/dashboard.html"));
 });
 
@@ -90,6 +91,18 @@ app.post("/upload", upload.single("file"), (req, res) => {
 
   res.status(501);
 });
+
+app.post("/logout", (req, res) => {
+  const { username, token } = req.body;
+
+  if(auth.invalidateToken(token)){
+    res.status(200).send()
+  } else {
+    res.status(500).send()
+  }
+
+  console.log(`Username ${username} logged out.`)
+})
 
 app.use(express.static("view/assets"));
 

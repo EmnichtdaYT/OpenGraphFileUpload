@@ -186,4 +186,4 @@ function hash(input, salt) {
     .digest("hex");
 }
 
-module.exports = { login, isTokenValidForUser };
+module.exports = { login, isTokenValidForUser, invalidateToken };
