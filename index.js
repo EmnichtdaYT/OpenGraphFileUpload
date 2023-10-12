@@ -58,6 +58,7 @@ app.post("/login", (req, res) => {
     .login(username, password, extendedExpire, useragent)
     .then((response) => {
       res.status(response[0]).send(response[1]);
+      console.log(`Username ${username} logged in ` + (extendedExpire) ? "with extended expire." : "without extended expire.")
     })
     .catch((message) => {
       res.status(500).send(message);
@@ -73,8 +74,10 @@ app.post("/token", (req, res) => {
   auth.isTokenValidForUser(username, token, useragent).then((response) => {
     if(response){
       res.status(200).send({ message: "valid" });
+      console.log(`Token for username ${username} is valid.`)
     }else{
       res.status(401).send({ message: "invalid" });
+      console.log(`Token for username ${username} is invalid.`)
     }
   }).catch((message) => {
     res.status(500).send(message);

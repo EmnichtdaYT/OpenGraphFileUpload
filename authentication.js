@@ -113,7 +113,6 @@ function createToken(user, expiresIn, useragent) {
     var expire = new Date();
     expire.setDate(new Date().getDate() + expiresIn);
     expire = expire.toISOString();
-    console.log(expire);
 
     var token;
 
@@ -126,7 +125,6 @@ function createToken(user, expiresIn, useragent) {
             //if token exists generate new one
             generateUniqueToken();
           } else {
-            console.log("creating token");
             db.run(
               "INSERT INTO tokens (user, token, expire, useragent) VALUES (?, ?, ?, ?)",
               [user, token, expire, JSON.stringify(useragent)],
@@ -151,7 +149,13 @@ function createToken(user, expiresIn, useragent) {
 }
 
 function invalidateToken(token) {
-  //TODO implement
+  db.run("DELETE FROM tokens WHERE token = ?", [token], (err) => {
+    if (err) {
+      console.error(err.message);
+      return false;
+    }
+  });
+  return true;
 }
 
 function generateSalt(length) {
@@ -167,7 +171,7 @@ function register(username, password) {
 
   stmt.run(username, hash(password, salt), salt, function (err) {
     if (err) {
-      console.log("Error registering user:", err.message);
+      console.error("Error registering user:", err.message);
       return;
     }
     console.log(`User '${username}' registered`);
