@@ -8,13 +8,11 @@ function login(username, password, extendedExpire, useragent) {
     checkCredentials(username, password)
       .then((isValid) => {
         if (isValid) {
-          if (extendedExpire) {
-            createToken(username, 30, useragent);
-            resolve([200, { token: "Kiaraaaaaa", expiresIn: 30 }]);
-          } else {
-            createToken(username, 1, useragent);
-            resolve([200, { token: "Kiaraaaaaa", expiresIn: 1 }]);
-          }
+          var expiresIn = extendedExpire ? 30 : 1;
+
+          createToken(username, expiresIn, useragent).then((token) => {
+            resolve([200, { token: token, expiresIn: expiresIn }]);
+          });
         } else {
           resolve([401, { message: "authentication failure" }]);
         }
@@ -65,33 +63,91 @@ function checkCredentials(username, password) {
 }
 
 function isTokenValidForUser(username, token, useragent) {
-  //TODO implement
-  const tokenInfo = getTokenInfo(token);
-  if (useragent.browser !== tokenInfo[3].browser || useragent.os !== tokenInfo[3].os || useragent.platform !== tokenInfo[3].platform) {
-    invalidateToken(token);
-    return false;
-  }
-  return tokenInfo[0] && tokenInfo[1] === username;
+  return new Promise((resolve, reject) => {
+    getTokenInfo(token)
+      .then((tokenInfo) => {
+        if (!tokenInfo) {
+          resolve(false);
+          return;
+        }
+
+        if (
+          useragent.browser !== tokenInfo[3].browser ||
+          useragent.os !== tokenInfo[3].os ||
+          useragent.platform !== tokenInfo[3].platform ||
+          !tokenInfo[0] ||
+          tokenInfo[1] !== username
+        ) {
+          invalidateToken(token);
+          resolve(false);
+        } else {
+          resolve(true);
+        }
+      })
+      .catch((message) => {
+        reject(message);
+      });
+  });
 }
 
 function getTokenInfo(token) {
-  //TODO implement
-  return [
-    true,
-    "zoe",
-    "hier kommt dann eine datetime hin.",
-    {
-      browser: "Firefox",
-      version: "114.0",
-      os: "Linux 64",
-      platform: "Linux",
-      source: "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0",
-    },
-  ];
+  return new Promise((resolve, reject) => {
+    db.get("SELECT * FROM tokens WHERE token = ?", [token], (err, row) => {
+      if (err) {
+        console.error(err.message);
+        reject({ message: "server error, check logs" });
+        return;
+      }
+
+      if (row) {
+        resolve([new Date(row.expire) > new Date(), row.user, row.expire, JSON.parse(row.useragent)]);
+      } else {
+        resolve(false); //token does not exist
+      }
+    });
+  });
 }
 
-function createToken(username, expiresIn, useragent) {
-  //TODO implement
+function createToken(user, expiresIn, useragent) {
+  return new Promise((resolve, reject) => {
+    var expire = new Date();
+    expire.setDate(new Date().getDate() + expiresIn);
+    expire = expire.toISOString();
+    console.log(expire);
+
+    var token;
+
+    function generateUniqueToken() {
+      token = crypto.randomBytes(25).toString("hex");
+
+      getTokenInfo(token)
+        .then((tokenInfo) => {
+          if (tokenInfo) {
+            //if token exists generate new one
+            generateUniqueToken();
+          } else {
+            console.log("creating token");
+            db.run(
+              "INSERT INTO tokens (user, token, expire, useragent) VALUES (?, ?, ?, ?)",
+              [user, token, expire, JSON.stringify(useragent)],
+              (err) => {
+                if (err) {
+                  console.error(err.message);
+                  reject({ message: "server error, check logs" });
+                  return;
+                }
+              }
+            );
+            resolve(token);
+          }
+        })
+        .catch((message) => {
+          reject(message);
+        });
+    }
+
+    generateUniqueToken();
+  });
 }
 
 function invalidateToken(token) {
