@@ -50,7 +50,9 @@
     <header class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
         <ol class="breadcrumb" style="margin-bottom: 0">
-          <li class="breadcrumb-item active" aria-current="page">files</li>
+          <li class="breadcrumb-item"><a href="/files">files</a></li>
+          <li class="breadcrumb-item" aria-current="page"><a href="#">something</a></li>
+          <li class="breadcrumb-item active" aria-current="page">meow</li>
         </ol>
         <div>
           <button class="btn btn-secondary" style="margin-right: 5px" id="mkdirButton">
@@ -95,7 +97,7 @@
     </header>
 
     <div class="container mt-4">
-      <h3>Content of files</h3>
+      <h3>Content of meow</h3>
       <table class="table bg-dark rounded table-hover">
         <thead>
           <tr>
@@ -213,65 +215,5 @@
       </table>
     </div>
 
-    <script>
-      if (getCookie("token") && getCookie("user")) {
-        const tokenCheck = new XMLHttpRequest();
-
-        tokenCheck.onreadystatechange = () => {
-          if (tokenCheck.readyState !== 4) {
-            return;
-          }
-
-          if (tokenCheck.status !== 200) {
-            window.location.href = "/";
-          }
-        };
-
-        tokenCheck.open("POST", "/token", true);
-        tokenCheck.setRequestHeader("Content-type", "application/json");
-        tokenCheck.send(JSON.stringify({ username: getCookie("user"), token: getCookie("token") }));
-      }
-
-      function logout() {
-        const request = new XMLHttpRequest();
-
-        request.onreadystatechange = () => {
-          if (request.readyState === 4) {
-            window.location.href = "/";
-          }
-        };
-
-        request.open("POST", "/logout", true);
-        request.setRequestHeader("Content-type", "application/json");
-        request.send(JSON.stringify({ username: getCookie("user"), token: getCookie("token") }));
-      }
-
-      function setCookie(cname, cvalue, exdays) {
-        if (exdays !== undefined) {
-          const d = new Date();
-          d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
-          var expires = "expires=" + d.toUTCString();
-        } else {
-          var expires = "";
-        }
-        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/;SameSite=Strict";
-      }
-
-      function getCookie(cname) {
-        let name = cname + "=";
-        let decodedCookie = decodeURIComponent(document.cookie);
-        let ca = decodedCookie.split(";");
-        for (let i = 0; i < ca.length; i++) {
-          let c = ca[i];
-          while (c.charAt(0) == " ") {
-            c = c.substring(1);
-          }
-          if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-          }
-        }
-        return "";
-      }
-    </script>
   </body>
 </html>

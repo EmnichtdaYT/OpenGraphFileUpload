@@ -41,6 +41,10 @@ app.get("/files", function (req, res) {
   res.sendFile(path.join(__dirname, "./view/dashboard.html"));
 });
 
+app.get("/concept", (req, res) => {
+  res.sendFile(path.join(__dirname, "./view/folder_design_concept.html"))
+})
+
 app.get("/login", (req, res) => {
   res.redirect(
     301,
@@ -59,7 +63,7 @@ app.post("/login", (req, res) => {
     .login(username, password, extendedExpire, useragent)
     .then((response) => {
       res.status(response[0]).send(response[1]);
-      console.log(`Username ${username} logged in ` + (extendedExpire) ? "with extended expire." : "without extended expire.")
+      console.log(`Username ${username} logged in ` + ((extendedExpire) ? "with extended expire." : "without extended expire."))
     })
     .catch((message) => {
       res.status(500).send(message);
