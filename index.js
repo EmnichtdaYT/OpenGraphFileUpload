@@ -1,15 +1,13 @@
 const express = require("express");
 const path = require("path");
-const multer = require("multer");
 const bodyParser = require("body-parser");
 const rateLimit = require("express-rate-limit");
 const auth = require("./authentication.js");
+const userfiles = require("./userfiles.js")
 const expressuseragent = require("express-useragent");
 
 const app = express();
 const port = process.env.PORT || 8080;
-
-const upload = multer();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -89,12 +87,31 @@ app.post("/token", (req, res) => {
   })
 });
 
-app.post("/upload", upload.single("file"), (req, res) => {
-  const token = req.body.token;
-  const file = req.file;
+function authTest(req, res, next){
+  console.log(req.headers.cookie)
+  //ich muss eine auth middleware gscheid machen.
+}
 
-  res.status(501);
-});
+app.get("/test", authTest, (req, res) => {
+  console.log("authTest did next()")
+  res.status(200).send("ok");
+})
+
+app.get("/upload", (req, res) => {
+  res.sendFile(path.join(__dirname, "./view/upload.html"))
+})
+
+app.post("/upload", userfiles.upload.single("file"), (req, res) => {
+
+  const { username, token } = req.body;
+  const useragent = req.useragent;
+
+  auth.isTokenValidForUser(username, token, useragent).then((response) => {
+    
+  }).catch((message) => {
+
+  })
+})
 
 app.post("/logout", (req, res) => {
   const { username, token } = req.body;
