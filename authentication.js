@@ -186,4 +186,42 @@ function hash(input, salt) {
     .digest("hex");
 }
 
-module.exports = { login, isTokenValidForUser, invalidateToken };
+function authMcookies(req, res, next) {
+  const { token, user } = req.cookies;
+  const useragent = req.useragent;
+
+  isTokenValidForUser(user, token, useragent)
+    .then((isValid) => {
+      if (isValid) {
+        next();
+      } else {
+        res.set("Content-Type", "text/html");
+        res.status(401).sendFile(path.join(__dirname, "./view/401.html"));
+      }
+    })
+    .catch((message) => {
+      res.set("Content-Type", "text/html");
+      res.status(500).sendFile(path.join(__dirname, "./view/500.html"));
+    });
+}
+
+function authMbody(req, res, next) {
+  const { username, token } = req.body;
+  const useragent = req.useragent;
+
+  isTokenValidForUser(username, token, useragent)
+    .then((isValid) => {
+      if (isValid) {
+        next();
+      } else {
+        res.set("Content-Type", "application/json");
+        res.status(401).send({ message: "Token invalid. Please log in again." });
+      }
+    })
+    .catch((message) => {
+      res.set("Content-Type", "application/json");
+      res.status(500).send(message);
+    });
+}
+
+module.exports = { login, isTokenValidForUser, invalidateToken, authMcookies, authMbody };
