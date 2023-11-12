@@ -1,7 +1,8 @@
 const sqlite3 = require("sqlite3").verbose();
 const crypto = require("crypto");
+const path = require("path");
 
-const db = require("./dbmanager.js").db
+const db = require("./dbmanager.js").db;
 
 function login(username, password, extendedExpire, useragent) {
   return new Promise((resolve, reject) => {
