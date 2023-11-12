@@ -67,7 +67,6 @@ app.post("/login", (req, res) => {
     .login(username, password, extendedExpire, useragent)
     .then((response) => {
       res.status(response[0]).send(response[1]);
-      console.log(`Username ${username} logged in ` + ((extendedExpire) ? "with extended expire." : "without extended expire."))
     })
     .catch((message) => {
       res.status(500).send(message);
@@ -77,7 +76,7 @@ app.post("/login", (req, res) => {
 app.post("/token", auth.authMbody, (req, res) => {
   res.set("Content-Type", "application/json");
 
-      res.status(200).send({ message: "valid" });
+  res.status(200).send({ message: "valid" });
 });
 
 app.get("/upload", auth.authMcookies, (req, res) => {
