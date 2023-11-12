@@ -214,23 +214,6 @@
     </div>
 
     <script>
-      if (getCookie("token") && getCookie("user")) {
-        const tokenCheck = new XMLHttpRequest();
-
-        tokenCheck.onreadystatechange = () => {
-          if (tokenCheck.readyState !== 4) {
-            return;
-          }
-
-          if (tokenCheck.status !== 200) {
-            window.location.href = "/";
-          }
-        };
-
-        tokenCheck.open("POST", "/token", true);
-        tokenCheck.setRequestHeader("Content-type", "application/json");
-        tokenCheck.send(JSON.stringify({ username: getCookie("user"), token: getCookie("token") }));
-      }
 
       function logout() {
         const request = new XMLHttpRequest();
