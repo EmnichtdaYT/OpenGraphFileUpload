@@ -3,7 +3,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const rateLimit = require("express-rate-limit");
 const auth = require("./authentication.js");
-const userfiles = require("./userfiles.js")
+const userfiles = require("./userfiles.js");
 const expressuseragent = require("express-useragent");
 const cookieParser = require("cookie-parser");
 
@@ -34,7 +34,8 @@ app.use("/login", loginLimiter);
 app.use("/token", loginLimiter);
 app.use("/logout", loginLimiter);
 
-app.get("/", function (req, res) {
+app.get("/", (req, res) => {
+  res.set("Content-Type", "text/html");
   res.sendFile(path.join(__dirname, "./view/index.html"));
 });
 
