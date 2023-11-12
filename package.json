@@ -29,6 +29,7 @@
   "homepage": "https://github.com/EmnichtdaYT/OpenGraphFileUpload#readme",
   "dependencies": {
     "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
     "express": "^4.18.2",
     "express-rate-limit": "^6.7.0",
     "express-useragent": "^1.0.15",
