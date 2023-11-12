@@ -96,16 +96,19 @@ app.get("/upload", auth.authMcookies, (req, res) => {
 });*/
 
 app.post("/logout", (req, res) => {
+  res.set("Content-Type", "application/json");
+
   const { username, token } = req.body;
 
-  if(auth.invalidateToken(token)){
-    res.status(200).send()
-  } else {
-    res.status(500).send()
-  }
-
-  console.log(`Username ${username} logged out.`)
-})
+  auth
+    .invalidateToken(token)
+    .then((message) => {
+      res.status(200).send(message);
+    })
+    .catch((message) => {
+      res.status(500).send(message);
+    });
+});
 
 app.use(express.static("view/assets"));
 

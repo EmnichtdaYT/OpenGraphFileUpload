@@ -30,6 +30,7 @@ function checkCredentials(username, password) {
       if (err) {
         console.error(err.message);
         reject({ message: "server error, check logs" });
+        return;
       }
 
       if (row) {
@@ -44,6 +45,7 @@ function checkCredentials(username, password) {
             if (err) {
               console.error(err.message);
               reject({ message: "server error, check logs" });
+              return;
             }
 
             if (row) {
@@ -65,6 +67,11 @@ function checkCredentials(username, password) {
 
 function isTokenValidForUser(username, token, useragent) {
   return new Promise((resolve, reject) => {
+    if (!username || !token || !useragent) {
+      resolve(false);
+      return;
+    }
+
     getTokenInfo(token)
       .then((tokenInfo) => {
         if (!tokenInfo) {
@@ -92,6 +99,11 @@ function isTokenValidForUser(username, token, useragent) {
 }
 
 function getTokenInfo(token) {
+  if (!token) {
+    resolve(false); //token does not exist
+    return;
+  }
+
   return new Promise((resolve, reject) => {
     db.get("SELECT * FROM tokens WHERE token = ?", [token], (err, row) => {
       if (err) {
@@ -133,11 +145,11 @@ function createToken(user, expiresIn, useragent) {
                 if (err) {
                   console.error(err.message);
                   reject({ message: "server error, check logs" });
-                  return;
+                } else {
+                  resolve(token);
                 }
               }
             );
-            resolve(token);
           }
         })
         .catch((message) => {
@@ -150,13 +162,16 @@ function createToken(user, expiresIn, useragent) {
 }
 
 function invalidateToken(token) {
-  db.run("DELETE FROM tokens WHERE token = ?", [token], (err) => {
-    if (err) {
-      console.error(err.message);
-      return false;
-    }
+  return new Promise((resolve, reject) => {
+    db.run("DELETE FROM tokens WHERE token = ?", [token], (err) => {
+      if (err) {
+        console.error(err.message);
+        reject({ message: "server error, check logs" });
+      } else {
+        resolve({ message: "done" });
+      }
+    });
   });
-  return true;
 }
 
 function generateSalt(length) {
