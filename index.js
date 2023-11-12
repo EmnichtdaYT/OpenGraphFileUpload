@@ -5,6 +5,7 @@ const rateLimit = require("express-rate-limit");
 const auth = require("./authentication.js");
 const userfiles = require("./userfiles.js")
 const expressuseragent = require("express-useragent");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -13,6 +14,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(expressuseragent.express());
+
+app.use(cookieParser());
 
 const generalLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
@@ -35,13 +38,15 @@ app.get("/", function (req, res) {
   res.sendFile(path.join(__dirname, "./view/index.html"));
 });
 
-app.get("/files", function (req, res) {
+app.get("/files", auth.authMcookies, (req, res) => {
+  res.set("Content-Type", "text/html");
   res.sendFile(path.join(__dirname, "./view/dashboard.html"));
 });
 
-app.get("/concept", (req, res) => {
-  res.sendFile(path.join(__dirname, "./view/folder_design_concept.html"))
-})
+app.get("/concept", auth.authMcookies, (req, res) => {
+  res.set("Content-Type", "text/html");
+  res.sendFile(path.join(__dirname, "./view/folder_design_concept.html"));
+});
 
 app.get("/login", (req, res) => {
   res.redirect(
@@ -68,50 +73,26 @@ app.post("/login", (req, res) => {
     });
 });
 
-app.post("/token", (req, res) => {
-  const { username, token } = req.body;
-  const useragent = req.useragent;
-
+app.post("/token", auth.authMbody, (req, res) => {
   res.set("Content-Type", "application/json");
 
-  auth.isTokenValidForUser(username, token, useragent).then((response) => {
-    if(response){
       res.status(200).send({ message: "valid" });
-      console.log(`Token for username ${username} is valid.`)
-    }else{
-      res.status(401).send({ message: "invalid" });
-      console.log(`Token for username ${username} is invalid.`)
-    }
-  }).catch((message) => {
-    res.status(500).send(message);
-  })
 });
 
-function authTest(req, res, next){
-  console.log(req.headers.cookie)
-  //ich muss eine auth middleware gscheid machen.
-}
+app.get("/upload", auth.authMcookies, (req, res) => {
+  res.set("Content-Type", "text/html");
+  res.sendFile(path.join(__dirname, "./view/upload.html"));
+});
 
-app.get("/test", authTest, (req, res) => {
-  console.log("authTest did next()")
-  res.status(200).send("ok");
-})
-
-app.get("/upload", (req, res) => {
-  res.sendFile(path.join(__dirname, "./view/upload.html"))
-})
-
-app.post("/upload", userfiles.upload.single("file"), (req, res) => {
-
+/*app.post("/upload", userfiles.upload.single("file"), (req, res) => {
   const { username, token } = req.body;
   const useragent = req.useragent;
 
-  auth.isTokenValidForUser(username, token, useragent).then((response) => {
-    
-  }).catch((message) => {
-
-  })
-})
+  auth
+    .isTokenValidForUser(username, token, useragent)
+    .then((response) => {})
+    .catch((message) => {});
+});*/
 
 app.post("/logout", (req, res) => {
   const { username, token } = req.body;
