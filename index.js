@@ -111,5 +111,14 @@ app.post("/logout", (req, res) => {
 
 app.use(express.static("view/assets"));
 
+app.all("*", (req, res) => {
+  res.status(404).sendFile(path.join(__dirname, "./view/404.html"));
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).sendFile(path.join(__dirname, "./view/500.html"));
+});
+
 app.listen(port);
 console.log("Server started at http://localhost:" + port);
