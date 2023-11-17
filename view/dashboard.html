@@ -124,7 +124,7 @@
             <th scope="row">Folder</th>
             <td>1 GB</td>
             <td>
-              <button class="btn" style="margin: 0; padding: 0;">
+              <button class="btn" style="margin: 0; padding: 0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -159,7 +159,7 @@
             <th scope="row">image.png</th>
             <td>5,2 MB</td>
             <td>
-              <button class="btn" style="margin: 0; padding: 0;">
+              <button class="btn" style="margin: 0; padding: 0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -193,7 +193,7 @@
             <th scope="row">doc.pdf</th>
             <td>2 MB</td>
             <td>
-              <button class="btn" style="margin: 0; padding: 0;">
+              <button class="btn" style="margin: 0; padding: 0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -214,13 +214,18 @@
     </div>
 
     <script>
-
       function logout() {
         const request = new XMLHttpRequest();
 
         request.onreadystatechange = () => {
           if (request.readyState === 4) {
-            window.location.href = "/";
+            if (request.status === 200) {
+              setCookie("user", "", 0);
+              setCookie("token", "", 0);
+              window.location.href = "/";
+            } else {
+              alert("Error while logging out.");
+            }
           }
         };
 
