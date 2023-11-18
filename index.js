@@ -50,11 +50,7 @@ app.get("/concept", auth.authMcookies, (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  res.redirect(
-    301,
-    "/",
-    "Assuming you want to see the loin page. For authentication use POST on this endpoint."
-  );
+  res.redirect(301, "/");
 });
 
 app.post("/login", (req, res) => {
@@ -66,17 +62,21 @@ app.post("/login", (req, res) => {
   auth
     .login(username, password, extendedExpire, useragent)
     .then((response) => {
-      res.status(response[0]).send(response[1]);
+      if (response !== null) {
+        res.cookie("token", response[0], { httpOnly: true, sameSite: "strict", maxAge: response[1] });
+        res.cookie("user", username, { httpOnly: true, sameSite: "strict", maxAge: response[1] });
+        res.redirect(303, "/files");
+      } else {
+        res.status(200).send({ success: false });
+      }
     })
     .catch((message) => {
       res.status(500).send(message);
     });
 });
 
-app.post("/token", auth.authMbody, (req, res) => {
-  res.set("Content-Type", "application/json");
-
-  res.status(200).send({ message: "valid" });
+app.post("/token", auth.authMcookies, (req, res) => {
+  res.redirect(303, "/files");
 });
 
 app.get("/upload", auth.authMcookies, (req, res) => {
@@ -84,28 +84,21 @@ app.get("/upload", auth.authMcookies, (req, res) => {
   res.sendFile(path.join(__dirname, "./view/upload.html"));
 });
 
-/*app.post("/upload", userfiles.upload.single("file"), (req, res) => {
-  const { username, token } = req.body;
-  const useragent = req.useragent;
-
-  auth
-    .isTokenValidForUser(username, token, useragent)
-    .then((response) => {})
-    .catch((message) => {});
-});*/
-
-app.post("/logout", (req, res) => {
+app.get("/logout", (req, res) => {
   res.set("Content-Type", "application/json");
 
-  const { username, token } = req.body;
+  const { token } = req.cookies;
 
   auth
     .invalidateToken(token)
     .then((message) => {
-      res.status(200).send(message);
+      res.cookie("token", undefined, { maxAge: -1 });
+      res.cookie("user", undefined, { maxAge: -1 });
+      res.redirect(303, "/");
     })
     .catch((message) => {
-      res.status(500).send(message);
+      res.set("Content-Type", "text/html");
+      res.status(500).sendFile(path.join(__dirname, "./view/500.html"));
     });
 });
 

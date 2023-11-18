@@ -9,13 +9,22 @@ function login(username, password, extendedExpire, useragent) {
     checkCredentials(username, password)
       .then((isValid) => {
         if (isValid) {
-          var expiresIn = extendedExpire ? 30 : 1;
+          let maxAgeD;
+          let maxAgeS;
+          
+          if(extendedExpire){
+            maxAgeD = 30
+            maxAgeS = maxAgeD*24*60*60
+          }else{
+            maxAgeD = 1
+            maxAgeS = undefined
+          }
 
-          createToken(username, expiresIn, useragent).then((token) => {
-            resolve([200, { token: token, expiresIn: expiresIn }]);
+          createToken(username, maxAgeD, useragent).then((token) => {
+            resolve([token, maxAgeS]);
           });
         } else {
-          resolve([401, { message: "authentication failure" }]);
+          resolve(null);
         }
       })
       .catch((message) => {
@@ -131,18 +140,18 @@ function createToken(user, expiresIn, useragent) {
     while (await getTokenInfo(token).catch((message) => reject(message)))
       token = crypto.randomBytes(25).toString("hex");
 
-            db.run(
-              "INSERT INTO tokens (user, token, expire, useragent) VALUES (?, ?, ?, ?)",
-              [user, token, expire, JSON.stringify(useragent)],
-              (err) => {
-                if (err) {
-                  console.error(err.message);
-                  reject({ message: "server error, check logs" });
-                } else {
-                  resolve(token);
-                }
-              }
-            );
+    db.run(
+      "INSERT INTO tokens (user, token, expire, useragent) VALUES (?, ?, ?, ?)",
+      [user, token, expire, JSON.stringify(useragent)],
+      (err) => {
+        if (err) {
+          console.error(err.message);
+          reject({ message: "server error, check logs" });
+        } else {
+          resolve(token);
+        }
+      }
+    );
   });
 }
 
@@ -206,23 +215,4 @@ function authMcookies(req, res, next) {
     });
 }
 
-function authMbody(req, res, next) {
-  const { username, token } = req.body;
-  const useragent = req.useragent;
-
-  isTokenValidForUser(username, token, useragent)
-    .then((isValid) => {
-      if (isValid) {
-        next();
-      } else {
-        res.set("Content-Type", "application/json");
-        res.status(401).send({ message: "Token invalid. Please log in again." });
-      }
-    })
-    .catch((message) => {
-      res.set("Content-Type", "application/json");
-      res.status(500).send(message);
-    });
-}
-
-module.exports = { login, isTokenValidForUser, invalidateToken, authMcookies, authMbody };
+module.exports = { login, isTokenValidForUser, invalidateToken, authMcookies };
