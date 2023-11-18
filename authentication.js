@@ -122,22 +122,15 @@ function getTokenInfo(token) {
 }
 
 function createToken(user, expiresIn, useragent) {
-  return new Promise((resolve, reject) => {
-    var expire = new Date();
+  return new Promise(async (resolve, reject) => {
+    let expire = new Date();
     expire.setDate(new Date().getDate() + expiresIn);
     expire = expire.toISOString();
 
-    var token;
-
-    function generateUniqueToken() {
+    let token = crypto.randomBytes(25).toString("hex");
+    while (await getTokenInfo(token).catch((message) => reject(message)))
       token = crypto.randomBytes(25).toString("hex");
 
-      getTokenInfo(token)
-        .then((tokenInfo) => {
-          if (tokenInfo) {
-            //if token exists generate new one
-            generateUniqueToken();
-          } else {
             db.run(
               "INSERT INTO tokens (user, token, expire, useragent) VALUES (?, ?, ?, ?)",
               [user, token, expire, JSON.stringify(useragent)],
@@ -150,14 +143,6 @@ function createToken(user, expiresIn, useragent) {
                 }
               }
             );
-          }
-        })
-        .catch((message) => {
-          reject(message);
-        });
-    }
-
-    generateUniqueToken();
   });
 }
 
