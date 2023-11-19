@@ -206,6 +206,8 @@ function authMcookies(req, res, next) {
         next();
       } else {
         res.set("Content-Type", "text/html");
+        res.cookie("token", undefined, { maxAge: -1, sameSite: "strict" });
+        res.cookie("user", undefined, { maxAge: -1, sameSite: "strict" });
         res.status(401).sendFile(path.join(__dirname, "./view/401.html"));
       }
     })

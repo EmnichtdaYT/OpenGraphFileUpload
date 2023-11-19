@@ -92,8 +92,8 @@ app.get("/logout", (req, res) => {
   auth
     .invalidateToken(token)
     .then((message) => {
-      res.cookie("token", undefined, { maxAge: -1 });
-      res.cookie("user", undefined, { maxAge: -1 });
+      res.cookie("token", undefined, { maxAge: -1, sameSite: "strict" });
+      res.cookie("user", undefined, { maxAge: -1, sameSite: "strict" });
       res.redirect(303, "/");
     })
     .catch((message) => {
