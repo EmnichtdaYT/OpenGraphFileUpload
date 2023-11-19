@@ -65,7 +65,7 @@ app.post("/login", (req, res) => {
       if (response !== null) {
         res.cookie("token", response[0], { httpOnly: true, sameSite: "strict", maxAge: response[1] });
         res.cookie("user", username, { httpOnly: true, sameSite: "strict", maxAge: response[1] });
-        res.redirect(303, "/files");
+        res.status(200).send({ success: true });
       } else {
         res.status(200).send({ success: false });
       }
@@ -76,7 +76,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/token", auth.authMcookies, (req, res) => {
-  res.redirect(303, "/files");
+  res.status(200).send();
 });
 
 app.get("/upload", auth.authMcookies, (req, res) => {
