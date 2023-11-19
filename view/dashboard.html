@@ -89,7 +89,7 @@
               />
             </svg>
           </button>
-          <button class="btn btn-danger" id="logoutButton" onclick="logout()">Logout</button>
+          <a href="/logout"><button class="btn btn-danger" id="logoutButton">Logout</button></a>
         </div>
       </div>
     </header>
@@ -212,54 +212,5 @@
         </tbody>
       </table>
     </div>
-
-    <script>
-      function logout() {
-        const request = new XMLHttpRequest();
-
-        request.onreadystatechange = () => {
-          if (request.readyState === 4) {
-            if (request.status === 200) {
-              setCookie("user", "", 0);
-              setCookie("token", "", 0);
-              window.location.href = "/";
-            } else {
-              alert("Error while logging out.");
-            }
-          }
-        };
-
-        request.open("POST", "/logout", true);
-        request.setRequestHeader("Content-type", "application/json");
-        request.send(JSON.stringify({ username: getCookie("user"), token: getCookie("token") }));
-      }
-
-      function setCookie(cname, cvalue, exdays) {
-        if (exdays !== undefined) {
-          const d = new Date();
-          d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
-          var expires = "expires=" + d.toUTCString();
-        } else {
-          var expires = "";
-        }
-        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/;SameSite=Strict";
-      }
-
-      function getCookie(cname) {
-        let name = cname + "=";
-        let decodedCookie = decodeURIComponent(document.cookie);
-        let ca = decodedCookie.split(";");
-        for (let i = 0; i < ca.length; i++) {
-          let c = ca[i];
-          while (c.charAt(0) == " ") {
-            c = c.substring(1);
-          }
-          if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-          }
-        }
-        return "";
-      }
-    </script>
   </body>
 </html>
