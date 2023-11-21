@@ -29,10 +29,17 @@ const loginLimiter = rateLimit({
   message: "Too many login attempts, please try again later.",
 });
 
+const uploadLimiter = rateLimit({
+  windowMs: 5 * 1000, // 5 seconds
+  max: 2, // limit each IP to 10 requests per windowMs
+  message: "Too many uploads, please try again later.",
+});
+
 app.use(generalLimiter);
 app.use("/login", loginLimiter);
 app.use("/token", loginLimiter);
 app.use("/logout", loginLimiter);
+app.use("/upload", uploadLimiter)
 
 app.get("/", (req, res) => {
   res.set("Content-Type", "text/html");
@@ -79,11 +86,6 @@ app.post("/token", auth.authMcookies, (req, res) => {
   res.status(200).send();
 });
 
-app.get("/upload", auth.authMcookies, (req, res) => {
-  res.set("Content-Type", "text/html");
-  res.sendFile(path.join(__dirname, "./view/upload.html"));
-});
-
 app.get("/logout", (req, res) => {
   const { token } = req.cookies;
 
@@ -99,6 +101,8 @@ app.get("/logout", (req, res) => {
       res.status(500).sendFile(path.join(__dirname, "./view/500.html"));
     });
 });
+
+app.post("/upload", auth.authMcookies, userfiles.upload.array("files", process.env.MULTER_FILE_MAX_COUNT || 25), userfiles.handleFileUpload)
 
 app.use(express.static("view/assets"));
 
