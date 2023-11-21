@@ -8,10 +8,10 @@ const expressuseragent = require("express-useragent");
 const cookieParser = require("cookie-parser");
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.EXPRESS_SERVER_PORT || 8080;
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: process.env.BODYPARSER_BODY_SIZE_LIMIT || '1mb' }));
 
 app.use(expressuseragent.express());
 
