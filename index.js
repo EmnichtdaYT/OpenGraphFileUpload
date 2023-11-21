@@ -85,8 +85,6 @@ app.get("/upload", auth.authMcookies, (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-  res.set("Content-Type", "application/json");
-
   const { token } = req.cookies;
 
   auth
