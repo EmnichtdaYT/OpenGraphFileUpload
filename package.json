@@ -4,7 +4,8 @@
   "description": "A file share service that generates Open Graph Protocol metadata",
   "main": "index.js",
   "scripts": {
-    "start": ". ./export_env_vars.sh && node index.js"
+    "start": ". ./export_env_vars.sh && node index.js",
+    "cleanup": ". ./export_env_vars.sh && node ./cleanup/index.js"
   },
   "repository": {
     "type": "git",
