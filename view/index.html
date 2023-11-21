@@ -105,19 +105,19 @@
           mode: "same-origin",
           credentials: "same-origin",
           redirect: "error",
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username: username, password: password, extendedExpire: keepLoggedin }),
         }).then((response) => {
           console.log("login:", response.status);
 
-          if (response.ok){
+          if (response.ok) {
             response.json().then((json) => {
-              if(json.success===true){
+              if (json.success === true) {
                 window.location = "/files";
-              }else{
+              } else {
                 $("#login-msg").html("Incorrect username or password!");
               }
-            })
+            });
           } 
 
           $("#btn_submit").html("Login");
