@@ -14,10 +14,10 @@ function insertFile(file) {
         [file.id, file.filename, file.parent, file.owner],
         (err) => {
           if (err) {
-            console.error(`Error while inserting file ${file.id} into db`, err.message);
+            console.error("Error while inserting file into db", file.id, err.message);
             reject(file);
           } else {
-            console.log(`Inserted file ${file.id} into db`)
+            console.log("Inserted file into db", file.id)
             resolve(file);
           }
         }
