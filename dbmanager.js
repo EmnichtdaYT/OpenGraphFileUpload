@@ -1,6 +1,6 @@
 const sqlite3 = require("sqlite3").verbose();
 
-const db = new sqlite3.Database("credentials.db");
+const db = new sqlite3.Database( process.env.SQLITE_DB_FILE || "credentials.db");
 
 function insertFile(file) {
   return new Promise((resolve, reject) => {
