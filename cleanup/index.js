@@ -23,7 +23,7 @@ for (index in args) {
       purgeToken();
       break;
     default:
-      console.error("Unknown cleanup", arg);
+      console.error("Unknown cleanup", args[index]);
   }
 }
 
