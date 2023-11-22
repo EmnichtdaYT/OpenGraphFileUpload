@@ -243,10 +243,13 @@
                 <input class="form-control-file" id="files" type="file" name="files" multiple="multiple" />
               </div>
             </form>
+            <p id="uploadModalFormError" class="text-danger"></p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button onclick="handleUploadForm()" type="button" class="btn btn-success">Upload</button>
+            <button id="uploadModalUpload" onclick="handleUploadForm()" type="button" class="btn btn-success">
+              Upload
+            </button>
           </div>
         </div>
       </div>
@@ -254,13 +257,38 @@
 
     <script>
       function handleUploadForm() {
+        $("#uploadModalFormError").text("");
+        $("#uploadModalUpload").html(
+          "<img width='20' height='20' src='/images/loading.gif' alt='Loading'></img>"
+        );
+        $("#uploadModalUpload").attr("disabled", true);
+
         fetch("/upload", {
           method: "POST",
           mode: "same-origin",
           credentials: "same-origin",
           redirect: "error",
           body: new FormData(document.getElementById("uploadModalForm")),
-        })
+        }).then(async (response) => {
+          if (response.status == 401) {
+            $("#uploadModalFormError").text("Unauthorized - Please try logging in again.");
+          } else if (response.status == 429) {
+            $("#uploadModalFormError").text("Too Many Requests - Please wait before uploading again.");
+          } else if (response.status == 200) {
+            let responseJson = await response.json();
+            if (responseJson.failed.length != 0) {
+              $("#uploadModalFormError").text("The following files failed to upload: " + responseJson.failed);
+            } else {
+              $("#uploadModal").modal("hide");
+            }
+          } else {
+            $("#uploadModalFormError").text("Error - You may try again later.");
+          }
+
+          $("#files").val(null)
+          $("#uploadModalUpload").text("Upload");
+          $("#uploadModalUpload").attr("disabled", false);
+        });
       }
     </script>
 
