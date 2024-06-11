@@ -25,7 +25,7 @@ class File {
 async function handleFileUpload(req, res) {
   const files = req.files;
   const user = req.cookies.user;
-  const parent = "files"; //TODO
+  const parent = 0; //TODO
 
   let success = [];
   let failed = [];
