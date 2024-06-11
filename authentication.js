@@ -217,4 +217,4 @@ function authMcookies(req, res, next) {
     });
 }
 
-module.exports = { login, isTokenValidForUser, invalidateToken, authMcookies };
+module.exports = { login, isTokenValidForUser, invalidateToken, authMcookies, register };
