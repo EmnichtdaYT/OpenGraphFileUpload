@@ -2,6 +2,8 @@ const sqlite3 = require("sqlite3").verbose();
 
 const db = new sqlite3.Database( process.env.SQLITE_DB_FILE || "credentials.db");
 
+db.get("PRAGMA foreign_keys = ON")
+
 function insertFile(file) {
   return new Promise((resolve, reject) => {
     if(file.isFolder){
