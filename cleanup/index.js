@@ -3,7 +3,7 @@ const fs = require("fs");
 
 let args = process.argv.slice(2);
 
-if (process.argv.length == 0) {
+if (args.length == 0) {
   console.error("No cleanup selected!\ntoken, files, purge-files, purge-token");
   return;
 }
