@@ -277,7 +277,7 @@
           } else if (response.status == 200) {
             let responseJson = await response.json();
             if (responseJson.failed.length != 0) {
-              $("#uploadModalFormError").text("The following files failed to upload: " + responseJson.failed);
+              $("#uploadModalFormError").text("The following files failed to upload: " + responseJson.failed.toString().replace(",", ", "));
             } else {
               $("#uploadModal").modal("hide");
             }
