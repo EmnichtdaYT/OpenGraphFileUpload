@@ -54,7 +54,13 @@
           <li class="breadcrumb-item active" aria-current="page">files</li>
         </ol>
         <div>
-          <button class="btn btn-secondary" style="margin-right: 5px" id="mkdirButton">
+          <button
+            class="btn btn-secondary"
+            style="margin-right: 5px"
+            id="createFolderButton"
+            data-toggle="modal"
+            data-target="#createFolderModal"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -255,6 +261,46 @@
       </div>
     </div>
 
+    <div
+      class="modal fade"
+      id="createFolderModal"
+      aria-labelledby="createFolderModalLabel"
+      aria-hidden="true"
+      tabindex="-1"
+      role="dialog"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="createFolderModalLabel">Create folder</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="createFolderModalForm">
+              <div class="form-group">
+                <label for="folder_name">Name</label>
+                <input class="form-control" id="folder_name" type="text" name="name" />
+              </div>
+            </form>
+            <p id="createFolderModalFormError" class="text-danger"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button
+              id="createFolderModalUpload"
+              onclick="handleUploadForm()"
+              type="button"
+              class="btn btn-success"
+            >
+              Upload
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
       function handleUploadForm() {
         $("#uploadModalFormError").text("");
@@ -277,7 +323,9 @@
           } else if (response.status == 200) {
             let responseJson = await response.json();
             if (responseJson.failed.length != 0) {
-              $("#uploadModalFormError").text("The following files failed to upload: " + responseJson.failed.toString().replace(",", ", "));
+              $("#uploadModalFormError").text(
+                "The following files failed to upload: " + responseJson.failed.toString().replace(",", ", ")
+              );
             } else {
               $("#uploadModal").modal("hide");
             }
@@ -285,7 +333,7 @@
             $("#uploadModalFormError").text("Error - You may try again later.");
           }
 
-          $("#files").val(null)
+          $("#files").val(null);
           $("#uploadModalUpload").text("Upload");
           $("#uploadModalUpload").attr("disabled", false);
         });
