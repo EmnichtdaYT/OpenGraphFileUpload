@@ -245,15 +245,15 @@
           <div class="modal-body">
             <form id="uploadModalForm">
               <div class="form-group">
-                <label for="files">File</label>
-                <input class="form-control-file" id="files" type="file" name="files" multiple="multiple" />
+                <label for="uploadModalFormFiles">File</label>
+                <input class="form-control-file" id="uploadModalFormFiles" type="file" name="files" multiple="multiple" />
               </div>
             </form>
             <p id="uploadModalFormError" class="text-danger"></p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button id="uploadModalUpload" onclick="handleUploadForm()" type="button" class="btn btn-success">
+            <button id="uploadModalFormUpload" onclick="handleUploadForm()" type="button" class="btn btn-success">
               Upload
             </button>
           </div>
@@ -280,8 +280,8 @@
           <div class="modal-body">
             <form id="createFolderModalForm">
               <div class="form-group">
-                <label for="folder_name">Name</label>
-                <input class="form-control" id="folder_name" type="text" name="name" />
+                <label for="createFolderModalFormName">Name</label>
+                <input class="form-control" id="createFolderModalFormName" type="text" name="name" />
               </div>
             </form>
             <p id="createFolderModalFormError" class="text-danger"></p>
@@ -289,12 +289,12 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             <button
-              id="createFolderModalUpload"
-              onclick="handleUploadForm()"
+              id="createFolderModalFormCreate"
+              onclick="handleCreateFolderForm()"
               type="button"
               class="btn btn-success"
             >
-              Upload
+              Create
             </button>
           </div>
         </div>
@@ -304,10 +304,10 @@
     <script>
       function handleUploadForm() {
         $("#uploadModalFormError").text("");
-        $("#uploadModalUpload").html(
+        $("#uploadModalFormUpload").html(
           "<img width='20' height='20' src='/images/loading.gif' alt='Loading'></img>"
         );
-        $("#uploadModalUpload").attr("disabled", true);
+        $("#uploadModalFormUpload").attr("disabled", true);
 
         fetch("/upload", {
           method: "POST",
@@ -333,10 +333,24 @@
             $("#uploadModalFormError").text("Error - You may try again later.");
           }
 
-          $("#files").val(null);
-          $("#uploadModalUpload").text("Upload");
-          $("#uploadModalUpload").attr("disabled", false);
+          $("#uploadModalFormFiles").val(null);
+          $("#uploadModalFormUpload").text("Upload");
+          $("#uploadModalFormUpload").attr("disabled", false);
         });
+      }
+
+      function handleCreateFolderForm() {
+        $("#createFolderModalFormError").text("");
+        $("#createFolderModalCreate").html(
+          "<img width='20' height='20' src='/images/loading.gif' alt='Loading'></img>"
+        );
+        $("#createFolderModalCreate").attr("disabled", true);
+
+        fetch("/createFolder");
+
+        $("#files").val(null);
+        $("#uploadModalCreate").text("Upload");
+        $("#uploadModalCreate").attr("disabled", false);
       }
     </script>
 
