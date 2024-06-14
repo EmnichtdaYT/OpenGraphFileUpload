@@ -246,14 +246,25 @@
             <form id="uploadModalForm">
               <div class="form-group">
                 <label for="uploadModalFormFiles">File</label>
-                <input class="form-control-file" id="uploadModalFormFiles" type="file" name="files" multiple="multiple" />
+                <input
+                  class="form-control-file"
+                  id="uploadModalFormFiles"
+                  type="file"
+                  name="files"
+                  multiple="multiple"
+                />
               </div>
             </form>
             <p id="uploadModalFormError" class="text-danger"></p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button id="uploadModalFormUpload" onclick="handleUploadForm()" type="button" class="btn btn-success">
+            <button
+              id="uploadModalFormUpload"
+              onclick="handleUploadForm()"
+              type="button"
+              class="btn btn-success"
+            >
               Upload
             </button>
           </div>
@@ -340,17 +351,35 @@
       }
 
       function handleCreateFolderForm() {
+        const name = $("#createFolderModalFormName").val();
+
         $("#createFolderModalFormError").text("");
-        $("#createFolderModalCreate").html(
+        $("#createFolderModalFormCreate").html(
           "<img width='20' height='20' src='/images/loading.gif' alt='Loading'></img>"
         );
-        $("#createFolderModalCreate").attr("disabled", true);
+        $("#createFolderModalFormCreate").attr("disabled", true);
 
-        fetch("/createFolder");
-
-        $("#files").val(null);
-        $("#uploadModalCreate").text("Upload");
-        $("#uploadModalCreate").attr("disabled", false);
+        fetch("/createFolder", {
+          method: "POST",
+          mode: "same-origin",
+          credentials: "same-origin",
+          redirect: "error",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: name }),
+        }).then(async (response) => {
+          if (response.status == 401) {
+            $("#createFolderModalFormError").text("Unauthorized - Please try logging in again.");
+          } else if (response.status == 429) {
+            $("#createFolderModalFormError").text("Too Many Requests - Please wait before uploading again.");
+          } else if (response.status == 200) {
+            $("#createFolderModal").modal("hide");
+          } else {
+            $("#createFolderModalFormError").text("Error - You may try again later.");
+          }
+          $("#createFolderModalFormName").val("");
+          $("#createFolderModalFormCreate").text("Create");
+          $("#createFolderModalFormCreate").attr("disabled", false);
+        });
       }
     </script>
 
