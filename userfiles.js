@@ -48,4 +48,19 @@ async function handleFileUpload(req, res) {
   res.status(200).send({ success: success, failed: failed });
 }
 
-module.exports = { upload, handleFileUpload, File };
+function handleCreateFolder(req, res) {
+  const user = req.cookies.user;
+  const parent = 0;
+  const name = req.body.name;
+
+  dbmanager
+    .insertFolder(name, parent, user)
+    .then(() => {
+      res.status(200).send();
+    })
+    .catch((message) => {
+      res.status(500).send(message);
+    });
+}
+
+module.exports = { upload, handleFileUpload, handleCreateFolder, File };

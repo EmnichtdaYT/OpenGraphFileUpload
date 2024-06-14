@@ -39,7 +39,8 @@ app.use(generalLimiter);
 app.use("/login", loginLimiter);
 app.use("/token", loginLimiter);
 app.use("/logout", loginLimiter);
-app.use("/upload", uploadLimiter)
+app.use("/upload", uploadLimiter);
+app.use("/createFolder", uploadLimiter);
 
 app.get("/", (req, res) => {
   res.set("Content-Type", "text/html");
@@ -103,6 +104,8 @@ app.get("/logout", (req, res) => {
 });
 
 app.post("/upload", auth.authMcookies, userfiles.upload.array("files", process.env.MULTER_FILE_MAX_COUNT || 25), userfiles.handleFileUpload)
+
+app.post("/createFolder", auth.authMcookies, userfiles.handleCreateFolder)
 
 app.use(express.static("view/assets"));
 
