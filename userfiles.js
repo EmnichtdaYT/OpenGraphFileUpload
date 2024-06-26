@@ -63,4 +63,9 @@ function handleCreateFolder(req, res) {
     });
 }
 
-module.exports = { upload, handleFileUpload, handleCreateFolder, File };
+function handleFileLs(req, res){
+  res.set("Content-Type", "text/plain");
+  res.status(200).send("" + req.path.split("/").slice(2))
+}
+
+module.exports = { upload, handleFileUpload, handleCreateFolder, handleFileLs, File };

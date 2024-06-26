@@ -47,10 +47,15 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "./view/index.html"));
 });
 
-app.get("/files", auth.authMcookies, (req, res) => {
+app.get("/files", auth.authMcookies, filesMiddleware);
+app.get("/files/*", auth.authMcookies, filesMiddleware);
+
+function filesMiddleware(req, res){
   res.set("Content-Type", "text/html");
   res.sendFile(path.join(__dirname, "./view/dashboard.html"));
-});
+}
+
+app.get("/api/files*", auth.authMcookies, userfiles.handleFileLs)
 
 app.get("/concept", auth.authMcookies, (req, res) => {
   res.set("Content-Type", "text/html");
